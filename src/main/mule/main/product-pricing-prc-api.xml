@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    <http:listener-config name="product-pricing-prc-api-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8081" />
+    </http:listener-config>
+    <apikit:config name="product-pricing-prc-api-config" api="resource::78234722-409d-4d71-aa51-1f55808cb405:product-pricing-prc-api:1.0.0:raml:zip:product-pricing-prc-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <flow name="product-pricing-prc-api-main">
+        <http:listener config-ref="product-pricing-prc-api-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <ee:transform doc:name="initVariables" doc:id="ecf4021f-8abe-4aef-8ac8-3335ac28c29b">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable variableName="apiKickOffTime"><![CDATA[%dw 2.0
+import * from dw::util::Timer
+output application/json
+---
+currentMilliseconds()]]></ee:set-variable>
+				<ee:set-variable variableName="resourcePath"><![CDATA[%dw 2.0
+output application/json
+---
+attributes.requestPath]]></ee:set-variable>
+				<ee:set-variable resource="dwl/loggingVars.dwl" variableName="loggingVars" />
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="common-process-start-logging-subflow" doc:id="dedf05e6-a0e0-4807-9a6b-f613cc2359fa" name="common-process-start-logging-subflow" />
+		<apikit:router config-ref="product-pricing-prc-api-config" />
+		<flow-ref doc:name="common-process-end-logging-subflow" doc:id="f72f8778-b5f3-4b58-8046-c0ca46fe5607" name="common-process-end-logging-subflow" />
+		<error-handler ref="global-error-handler-error-handler" />
+    </flow>
+    <flow name="product-pricing-prc-api-console">
+        <http:listener config-ref="product-pricing-prc-api-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="product-pricing-prc-api-config" />
+		<error-handler ref="global-error-handler-error-handler" />
+    </flow>
+    <flow name="delete:\products\(productId):product-pricing-prc-api-config">
+		<flow-ref doc:name="delete-product-implementation-subflow" doc:id="5db28b50-02d2-4f88-ad68-35a916a626da" name="delete-product-implementation-subflow"/>
+    </flow>
+    <flow name="patch:\products\(productId):application\json:product-pricing-prc-api-config">
+		<flow-ref doc:name="update-product-implementation-subflow" doc:id="f676a67e-935f-4f1c-866f-e149f2c64284" name="update-product-implementation-subflow"/>
+    </flow>
+    <flow name="get:\health-check:product-pricing-prc-api-config">
+		<flow-ref doc:name="healthcheck-implementation-subflow" doc:id="b0f8badf-8651-4743-99bf-6168901a9c22" name="healthcheck-implementation-subflow"/>
+    </flow>
+    <flow name="get:\ping:product-pricing-prc-api-config">
+		<flow-ref doc:name="ping-implementation-subflow" doc:id="cce69b37-3057-4223-a4b6-a1b9b42001b9" name="ping-implementation-subflow"/>
+    </flow>
+    <flow name="get:\products:product-pricing-prc-api-config">
+		<flow-ref doc:name="get-products-implementation-subflow" doc:id="7e41cdc4-25c2-489c-b491-fd87b674916f" name="get-products-implementation-subflow"/>
+    </flow>
+    <flow name="post:\products:application\json:product-pricing-prc-api-config">
+		<flow-ref doc:name="post-products-implementation-subflow" doc:id="8a36900a-4733-45a7-9f28-664413fbf8b8" name="post-products-implementation-subflow"/>
+    </flow>
+</mule>
