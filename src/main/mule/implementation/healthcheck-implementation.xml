@@ -16,17 +16,57 @@ vars.loggingVars update {
 	case .flowName -> "healthcheck-implementation-subflow"
 }
 ]]></ee:set-variable>
+				<ee:set-variable variableName="host" ><![CDATA[attributes.headers.host default ""]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
 		<flow-ref doc:name="common-flow-start-logging-subflow" doc:id="57945dc8-e717-45ca-b780-019100a449ae" name="common-flow-start-logging-subflow" />
 		<flow-ref doc:name="common-before-request-logging-subflow" doc:id="bde35dae-b9ca-42a7-bce4-fe6ed5366c46" name="common-before-request-logging-subflow"/>
-		<http:request doc:name="healthCheckRequest" doc:id="683ef63a-cf44-4816-8704-ce8253bfb8f2" config-ref="product-pricing-sys-api-httpRequester-config" path="${productPricingSysApi.healthCheck}">
-			<http:headers ><![CDATA[#[output application/java
+		<scatter-gather doc:name="Scatter-Gather" doc:id="856f8641-3a44-4247-a321-ea0c7e4cce1b" >
+			<route>
+				<try doc:name="Try" doc:id="ae009874-2d1e-456e-85cd-194ceb7fea41" >
+					<http:request doc:name="currencyExchangeApiRequest" doc:id="348a9031-92cf-419b-949d-781901434343" config-ref="currency-exchange-api" url="https://currency-exchange-api-v1-esulbe.5sc6y6-3.usa-e2.cloudhub.io/exchange" />
+					<ee:transform doc:name="responseMessage" doc:id="c92d3ca6-fd8f-4d3e-9c3c-2f99c28d8802" >
+						<ee:message >
+							<ee:set-payload resource="dwl/healthCheckSuccessResponse.dwl" />
+						</ee:message>
+					</ee:transform>
+					<error-handler >
+						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="bfb83833-119c-4173-b07c-7d6431ec2e29" >
+							<ee:transform doc:name="errorResponseMessage" doc:id="4411e95d-a188-4f03-a667-035443136698" >
+								<ee:message >
+									<ee:set-payload resource="dwl/currencyExchangeApiErrorResponse.dwl" />
+								</ee:message>
+							</ee:transform>
+						</on-error-continue>
+					</error-handler>
+				</try>
+			</route>
+			<route>
+				<try doc:name="Try" doc:id="a04e26a1-52cd-4595-a923-57e36181603b" >
+					<http:request doc:name="productPricingSysApiRequest" doc:id="683ef63a-cf44-4816-8704-ce8253bfb8f2" config-ref="product-pricing-sys-api-httpRequester-config" path="${productPricingSysApi.healthCheck}">
+			<http:headers><![CDATA[#[output application/java
 ---
 {
 	"x-correlation-id" : vars.loggingVars.correlationId
 }]]]></http:headers>
 		</http:request>
+					<ee:transform doc:name="responseMessage" doc:id="6f0538ac-d16d-44b9-8757-229f651690cf">
+						<ee:message>
+							<ee:set-payload resource="dwl/sysApiHealthCheckSuccessResponse.dwl" />
+						</ee:message>
+					</ee:transform>
+					<error-handler >
+						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="866028c9-73d7-4b2a-aa43-1b59c7757436" >
+							<ee:transform doc:name="errorResponseMessage" doc:id="afd54255-4c60-4734-a82d-4611c3dbfb04" >
+								<ee:message >
+									<ee:set-payload resource="dwl/sysApihealthCheckErrorResponse.dwl" />
+								</ee:message>
+							</ee:transform>
+						</on-error-continue>
+					</error-handler>
+				</try>
+			</route>
+		</scatter-gather>
 		<ee:transform doc:name="healthCheckResponse" doc:id="abd28c08-2d4a-436a-8746-314d59d4a8b0" >
 			<ee:message >
 				<ee:set-payload resource="dwl/healthCheckResponse.dwl" />
