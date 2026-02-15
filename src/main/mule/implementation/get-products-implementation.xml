@@ -23,7 +23,7 @@ vars.loggingVars update {
 		</ee:transform>
 		<flow-ref doc:name="common-flow-start-logging-subflow" doc:id="bd1381a6-f93e-4ecc-b017-a663b770e456" name="common-flow-start-logging-subflow" />
 		<flow-ref doc:name="common-before-request-logging-subflow" doc:id="f1d5f197-8f65-4949-9ec0-93e3c9b57f02" name="common-before-request-logging-subflow" />
-		<http:request doc:name="productsPricingPrcApiGetRequest" doc:id="a9e7e004-d347-4793-a8ce-31807263bdd9" config-ref="product-pricing-sys-api-httpRequester-config" path="${productPricingSysApi.productsPath}" target="allProducts" targetValue="#[output json --- payload]">
+		<http:request doc:name="productsPricingPrcApiGetRequest" doc:id="a9e7e004-d347-4793-a8ce-31807263bdd9" config-ref="product-pricing-sys-api-httpRequester-config" path="${productPricingSysApi.productsPath}" targetValue="#[output json --- payload]">
 			<http:headers ><![CDATA[#[output application/java
 ---
 {
@@ -42,7 +42,7 @@ vars.loggingVars update {
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
-payload map {
+(payload map {
 
         "productId"    : $.ExternalId__c,
         "currencyCode" : $.CurrencyCode__c,
@@ -51,7 +51,7 @@ payload map {
         "productPrice" : $.ProductPrice__c,
         "productCode"  : $.ProductCode
 
-}]]></ee:set-payload>
+}) filter ((item, index) -> !isEmpty(item.currencyCode) )]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 		<http:request doc:name="currencyExchangeApiRequest" doc:id="a7e09585-8277-4f7b-af32-0bc594502453" url="https://currency-exchange-api-v1-esulbe.5sc6y6-3.usa-e2.cloudhub.io/exchange" config-ref="currency-exchange-api" target="exchangeRates" targetValue="#[output json --- payload]"/>
@@ -63,12 +63,13 @@ var requestedCurrency = vars.currencyCode
 fun currencyConversion(productPrice, fromCurrency, requestedCurrency)=
 (	
  if(requestedCurrency ~= fromCurrency) 
-    productPrice
+    ((productPrice) as String {format: "0.00"}) as Number
  else if(requestedCurrency ~= "USD")
-    productPrice / exchangeRates[fromCurrency]
+    ((productPrice / exchangeRates[fromCurrency]) as String {format: "0.00"}) as Number
  else if(fromCurrency ~= "USD")
-    productPrice * exchangeRates[requestedCurrency]
- else ((productPrice / exchangeRates[fromCurrency]) * exchangeRates[requestedCurrency])
+    ((productPrice * exchangeRates[requestedCurrency]) as String {format: "0.00"}) as Number
+ else 
+ (((productPrice / exchangeRates[fromCurrency]) * exchangeRates[requestedCurrency]) as String {format: "0.00"}) as Number
 )
 output application/json
 ---
