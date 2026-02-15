@@ -16,11 +16,15 @@ vars.loggingVars update {
 	case .flowName -> flow.name
 }
 ]]></ee:set-variable>
+				<ee:set-variable variableName="productId" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.uriParams.'productId']]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
 		<flow-ref doc:name="common-flow-start-logging-subflow" doc:id="468c561c-a8ae-4a27-bbac-fcf644143bc7" name="common-flow-start-logging-subflow" />
 		<flow-ref doc:name="common-before-request-logging-subflow" doc:id="f4356465-a792-4c56-bea4-5858c6392292" name="common-before-request-logging-subflow" />
-		<http:request doc:name="productsPricingPrcApiUpdateRequest" doc:id="0a499708-663b-477e-9a27-8e12809c9fc0" config-ref="product-pricing-prc-api-httpRequester-config" method="PATCH" path="${productPricingPrcApi.productByIdPath}" >
+		<http:request doc:name="productsPricingPrcApiUpdateRequest" doc:id="0a499708-663b-477e-9a27-8e12809c9fc0" config-ref="product-pricing-sys-api-httpRequester-config" method="PATCH" path="${productPricingSysApi.productByIdPath}" >
 			<http:uri-params ><![CDATA[#[output application/java
 ---
 {
@@ -28,6 +32,19 @@ vars.loggingVars update {
 }]]]></http:uri-params>
 		</http:request>
 		<flow-ref doc:name="common-after-request-logging-subflow" doc:id="ec45aeaa-4599-46e0-890a-dc334e54f746" name="common-after-request-logging-subflow" />
+		<ee:transform doc:name="updateProductResponse" doc:id="28b71a28-3ba4-4616-a873-4321d2da9724" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "productId": vars.productId,
+  "successful": payload.'successful',
+  "salesforceId": payload.items.id[0],
+  "message": "Product Updated Successfully"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
 		<flow-ref doc:name="common-flow-end-logging-subflow" doc:id="102c9e9a-3f27-4346-aa06-9a98b5351ac3" name="common-flow-end-logging-subflow" />
 	</sub-flow>
 </mule>

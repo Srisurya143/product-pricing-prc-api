@@ -16,11 +16,14 @@ vars.loggingVars update {
 	case .flowName -> flow.name
 }
 ]]></ee:set-variable>
+				<ee:set-variable variableName="currencyCode" ><![CDATA[attributes.queryParams.'currencyCode']]></ee:set-variable>
+				<ee:set-variable variableName="limit" ><![CDATA[attributes.queryParams.'limit']]></ee:set-variable>
+				<ee:set-variable variableName="offset" ><![CDATA[attributes.queryParams.'offset']]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
 		<flow-ref doc:name="common-flow-start-logging-subflow" doc:id="bd1381a6-f93e-4ecc-b017-a663b770e456" name="common-flow-start-logging-subflow" />
 		<flow-ref doc:name="common-before-request-logging-subflow" doc:id="f1d5f197-8f65-4949-9ec0-93e3c9b57f02" name="common-before-request-logging-subflow" />
-		<http:request doc:name="productsPricingPrcApiGetRequest" doc:id="a9e7e004-d347-4793-a8ce-31807263bdd9" config-ref="product-pricing-prc-api-httpRequester-config" path="${productPricingPrcApi.productsPath}" >
+		<http:request doc:name="productsPricingPrcApiGetRequest" doc:id="a9e7e004-d347-4793-a8ce-31807263bdd9" config-ref="product-pricing-sys-api-httpRequester-config" path="${productPricingSysApi.productsPath}" target="allProducts" targetValue="#[output json --- payload]">
 			<http:headers ><![CDATA[#[output application/java
 ---
 {
@@ -34,6 +37,48 @@ vars.loggingVars update {
 	"offset"       : attributes.queryParams.'offset'
 }]]]></http:query-params>
 		</http:request>
+		<ee:transform doc:name="getAllProductsResponse" doc:id="87b6a749-20b9-4d34-9b68-9bebaf25df43" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map {
+
+        "productId"    : $.ExternalId__c,
+        "currencyCode" : $.CurrencyCode__c,
+        "description"  : $.Description,
+        "productName"  : $.Name,
+        "productPrice" : $.ProductPrice__c,
+        "productCode"  : $.ProductCode
+
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request doc:name="currencyExchangeApiRequest" doc:id="a7e09585-8277-4f7b-af32-0bc594502453" url="https://currency-exchange-api-v1-esulbe.5sc6y6-3.usa-e2.cloudhub.io/exchange" config-ref="currency-exchange-api" target="exchangeRates" targetValue="#[output json --- payload]"/>
+		<ee:transform doc:name="currencyCodeTransformation" doc:id="6205508c-5047-4421-8dc7-96c97e0fd712" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+var exchangeRates = vars.exchangeRates.'rates'
+var requestedCurrency = vars.currencyCode
+fun currencyConversion(productPrice, fromCurrency, requestedCurrency)=
+(	
+ if(requestedCurrency ~= fromCurrency) 
+    productPrice
+ else if(requestedCurrency ~= "USD")
+    productPrice / exchangeRates[fromCurrency]
+ else if(fromCurrency ~= "USD")
+    productPrice * exchangeRates[requestedCurrency]
+ else ((productPrice / exchangeRates[fromCurrency]) * exchangeRates[requestedCurrency])
+)
+output application/json
+---
+payload map ((item, index) -> item  update {
+    case .productPrice -> currencyConversion(item.productPrice, item.currencyCode, requestedCurrency)
+    case .currencyCode -> requestedCurrency
+} )
+    ]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
 		<flow-ref doc:name="common-after-request-logging-subflow" doc:id="db69f471-8196-40d9-a480-ffe4a42c981a" name="common-after-request-logging-subflow" />
 		<flow-ref doc:name="common-flow-end-logging-subflow" doc:id="6b196172-8c4a-4f2d-bd8c-5da8824fc4c8" name="common-flow-end-logging-subflow" />
 	</sub-flow>

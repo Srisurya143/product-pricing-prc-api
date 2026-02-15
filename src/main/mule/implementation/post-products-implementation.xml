@@ -20,13 +20,25 @@ vars.loggingVars update {
 		</ee:transform>
 		<flow-ref doc:name="common-flow-start-logging-subflow" doc:id="15da25e4-cd4c-48e3-993b-d8e9f35f4b0f" name="common-flow-start-logging-subflow" />
 		<flow-ref doc:name="common-before-request-logging-subflow" doc:id="bba4fbe7-d5e3-4152-b12b-255dacfbeb0b" name="common-before-request-logging-subflow" />
-		<http:request doc:name="productsPricingPrcApiPostRequest" doc:id="61b8d419-34b9-40d2-89dc-a7d93518e6be" config-ref="product-pricing-prc-api-httpRequester-config" method="POST" path="${productPricingPrcApi.productsPath}">
+		<http:request doc:name="productsPricingPrcApiPostRequest" doc:id="61b8d419-34b9-40d2-89dc-a7d93518e6be" config-ref="product-pricing-sys-api-httpRequester-config" method="POST" path="${productPricingSysApi.productsPath}">
 			<http:headers ><![CDATA[#[output application/java
 ---
 {
 	"x-correlation-id" : vars.loggingVars.correlationId
 }]]]></http:headers>
 		</http:request>
+		<ee:transform doc:name="createProductResponse" doc:id="d4cccfee-b34e-45dc-b700-3e10d7f2b980" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.items map ((item, index) ->{
+  "successful": item.successful,
+  "salesforceId": item.'id',
+  "message": "Product Created Successfully"
+} )]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
 		<flow-ref doc:name="common-after-request-logging-subflow" doc:id="58d30d81-80fe-4a3c-a6ae-5b3abd1385c2" name="common-after-request-logging-subflow" />
 		<flow-ref doc:name="common-flow-end-logging-subflow" doc:id="fabaa46a-4a43-4308-af1c-d23bfb3f0e1f" name="common-flow-end-logging-subflow" />
 	</sub-flow>

@@ -16,11 +16,15 @@ vars.loggingVars update {
 	case .flowName -> flow.name
 }
 ]]></ee:set-variable>
+				<ee:set-variable variableName="productId" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.uriParams.'productId']]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
 		<flow-ref doc:name="common-flow-start-logging-subflow" doc:id="2c4704b1-3938-45b5-8fe9-d7174d5b4017" name="common-flow-start-logging-subflow" />
 		<flow-ref doc:name="common-before-request-logging-subflow" doc:id="1b1755bb-e3db-43c2-a50e-761f069402f2" name="common-before-request-logging-subflow"/>
-		<http:request doc:name="productsPricingPrcApiDeleteRequest" doc:id="f9f2b70a-1c34-43cb-8ee3-ef860e39eb2c" config-ref="product-pricing-prc-api-httpRequester-config" method="DELETE" path="${productPricingPrcApi.productByIdPath}">
+		<http:request doc:name="productsPricingPrcApiDeleteRequest" doc:id="f9f2b70a-1c34-43cb-8ee3-ef860e39eb2c" config-ref="product-pricing-sys-api-httpRequester-config" method="DELETE" path="${productPricingSysApi.productByIdPath}">
 			<http:headers ><![CDATA[#[output application/java
 ---
 {
@@ -32,6 +36,19 @@ vars.loggingVars update {
 	productId : attributes.uriParams.'productId'
 }]]]></http:uri-params>
 		</http:request>
+		<ee:transform doc:name="deleteProductResponse" doc:id="0cc8538c-cb42-428a-bfb3-68d1e464817a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "productId": vars.productId,
+  "successful": payload.'successful',
+  "salesforceId": payload.items.id[0],
+  "message": "Poduct Deleted Successfully"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
 		<flow-ref doc:name="common-after-request-logging-subflow" doc:id="52ef981b-5c03-4bf8-9c57-23bf5ad1b891" name="common-after-request-logging-subflow"/>
 		<flow-ref doc:name="common-flow-end-logging-subflow" doc:id="14567495-4dc2-4804-88b9-ca982b8792f1" name="common-flow-end-logging-subflow" />
 	</sub-flow>
