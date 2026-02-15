@@ -13,7 +13,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 output application/json
 ---
 vars.loggingVars update {
-	case .flowName -> flow.name
+	case .flowName -> "post-products-implementation-subflow"
 }
 ]]></ee:set-variable>
 			</ee:variables>
@@ -29,14 +29,7 @@ vars.loggingVars update {
 		</http:request>
 		<ee:transform doc:name="createProductResponse" doc:id="d4cccfee-b34e-45dc-b700-3e10d7f2b980" >
 			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
----
-payload.items map ((item, index) ->{
-  "successful": item.successful,
-  "salesforceId": item.'id',
-  "message": "Product Created Successfully"
-} )]]></ee:set-payload>
+				<ee:set-payload resource="dwl/createProductsResponse.dwl" />
 			</ee:message>
 		</ee:transform>
 		<flow-ref doc:name="common-after-request-logging-subflow" doc:id="58d30d81-80fe-4a3c-a6ae-5b3abd1385c2" name="common-after-request-logging-subflow" />

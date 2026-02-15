@@ -13,7 +13,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 output application/json
 ---
 vars.loggingVars update {
-	case .flowName -> flow.name
+	case .flowName -> "delete-product-implementation-subflow"
 }
 ]]></ee:set-variable>
 				<ee:set-variable variableName="productId" ><![CDATA[%dw 2.0
@@ -38,15 +38,7 @@ attributes.uriParams.'productId']]></ee:set-variable>
 		</http:request>
 		<ee:transform doc:name="deleteProductResponse" doc:id="0cc8538c-cb42-428a-bfb3-68d1e464817a" >
 			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
----
-{
-  "productId": vars.productId,
-  "successful": payload.'successful',
-  "salesforceId": payload.items.id[0],
-  "message": "Poduct Deleted Successfully"
-}]]></ee:set-payload>
+				<ee:set-payload resource="dwl/deleteProductResponse.dwl" />
 			</ee:message>
 		</ee:transform>
 		<flow-ref doc:name="common-after-request-logging-subflow" doc:id="52ef981b-5c03-4bf8-9c57-23bf5ad1b891" name="common-after-request-logging-subflow"/>

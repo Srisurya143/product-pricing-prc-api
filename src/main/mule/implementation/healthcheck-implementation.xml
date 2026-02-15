@@ -13,7 +13,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 output application/json
 ---
 vars.loggingVars update {
-	case .flowName -> flow.name
+	case .flowName -> "healthcheck-implementation-subflow"
 }
 ]]></ee:set-variable>
 			</ee:variables>
@@ -29,10 +29,7 @@ vars.loggingVars update {
 		</http:request>
 		<ee:transform doc:name="healthCheckResponse" doc:id="abd28c08-2d4a-436a-8746-314d59d4a8b0" >
 			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
----
-payload]]></ee:set-payload>
+				<ee:set-payload resource="dwl/healthCheckResponse.dwl" />
 			</ee:message>
 		</ee:transform>
 		<flow-ref doc:name="common-after-request-logging-subflow" doc:id="499ea429-e0fb-44b0-a2c6-7839c7aac881" name="common-after-request-logging-subflow"/>
