@@ -6,7 +6,6 @@ output application/json
 	"flowName": vars.loggingVars.flowName default "",
 	"apiName": vars.loggingVars.apiName default Mule::p('api.Name'),
 	"eventTimeStamp": now(),
-	"appId": "",
 	"correlationId": vars.loggingVars.correlationId default correlationId,
 	"transactionLevel": Mule::p('errorLogger.transactionlevel'),
 	"status": p('errorLogger.status'),
