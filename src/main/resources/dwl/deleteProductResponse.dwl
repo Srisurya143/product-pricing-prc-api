@@ -5,7 +5,7 @@ if (payload.successful)
     {
         productId: vars.productId,
         successful: true,
-        salesforceId: payload.id,
+        salesforceId: payload.items.id[0],
         message: "Product Deleted Successfully"
     }
 else

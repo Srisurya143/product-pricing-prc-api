@@ -2,7 +2,7 @@ api:
   Name: "product-pricing-prc-api"
   Version: "1.0.0"
   status: "Running"
-
+  id: "20742161"
 http:
   listener:
     host: "0.0.0.0"
