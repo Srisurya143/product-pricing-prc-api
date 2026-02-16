@@ -10,7 +10,7 @@ output application/json
 	"transactionLevel": Mule::p('errorLogger.transactionlevel'),
 	"status": p('errorLogger.status'),
 	"code": if(!isEmpty(attributes.statusCode)) attributes.statusCode else "NA",
-	"errorType": error.errorType,
+	"errorType": [error.errorType.namespace  default "",error.errorType.identifier  default ""] joinBy  ":",
 	"description": if(!isEmpty(error.errorMessage)) error.errorMessage.payload else if(!isEmpty(error.description)) error.description else "",	
 	"detailedDescription": if(!isEmpty(error.errorMessage)) error.errorMessage.payload else if(!isEmpty(error.detailedDescription)) error.detailedDescription else "" 
 	}
