@@ -23,6 +23,7 @@ https:
 httpRetry:
   frequency: "2000"
   attempts: "3"
+  connectionIdelTimeOut: "40000"
 
   
 step:

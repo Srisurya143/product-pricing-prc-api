@@ -73,7 +73,7 @@ output application/json
                 </ee:transform>
             </on-error-propagate>
 		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="bf7817bd-72a0-460b-9741-87c468d3a766" type="ANY">
-			<ee:transform doc:name="Transform Message" doc:id="a14eb3b1-bf70-4138-9eb4-e5b8d6bb5979" >
+			<ee:transform doc:name="errorResponseMessage" doc:id="a14eb3b1-bf70-4138-9eb4-e5b8d6bb5979" >
 				<ee:message >
 					<ee:set-payload resource="dwl/anyErrorType.dwl" />
 				

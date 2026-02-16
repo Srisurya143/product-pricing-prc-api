@@ -1,9 +1,19 @@
 %dw 2.0
 output application/json
 ---
-{
-  "productId": vars.productId,
-  "successful": payload.'successful',
-  "salesforceId": payload.items.id[0],
-  "message": "Poduct Deleted Successfully"
-}
+if (payload.successful)
+    {
+        productId: vars.productId,
+        successful: true,
+        salesforceId: payload.id,
+        message: "Product Deleted Successfully"
+    }
+else
+    {
+        productId: vars.productId,
+        successful: false,
+        errorMessage:
+            (payload.payload.errors[0].message)
+            default payload.message
+            default "Error while deleting product"
+    }
