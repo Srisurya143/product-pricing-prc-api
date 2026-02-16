@@ -24,7 +24,13 @@ vars.loggingVars update {
 		<scatter-gather doc:name="Scatter-Gather" doc:id="856f8641-3a44-4247-a321-ea0c7e4cce1b" >
 			<route>
 				<try doc:name="Try" doc:id="ae009874-2d1e-456e-85cd-194ceb7fea41" >
-					<http:request doc:name="currencyExchangeApiRequest" doc:id="348a9031-92cf-419b-949d-781901434343" config-ref="currency-exchange-api" url="https://currency-exchange-api-v1-esulbe.5sc6y6-3.usa-e2.cloudhub.io/exchange" />
+					<http:request doc:name="currencyExchangeApiRequest" doc:id="348a9031-92cf-419b-949d-781901434343" config-ref="currency-exchange-api" url="https://currency-exchange-api-v1-esulbe.5sc6y6-3.usa-e2.cloudhub.io/exchange" >
+						<http:headers ><![CDATA[#[output application/java
+---
+{
+	"x-correlation-id" : vars.loggingVars.correlationId
+}]]]></http:headers>
+					</http:request>
 					<ee:transform doc:name="responseMessage" doc:id="c92d3ca6-fd8f-4d3e-9c3c-2f99c28d8802" >
 						<ee:message >
 							<ee:set-payload resource="dwl/healthCheckSuccessResponse.dwl" />

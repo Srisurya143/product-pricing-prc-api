@@ -39,7 +39,13 @@ vars.loggingVars update {
 		</http:request>
 		<flow-ref doc:name="common-after-request-logging-subflow" doc:id="9ae612c3-ca8b-4f24-bafb-62718b1940dc" name="common-after-request-logging-subflow"/>
 		<flow-ref doc:name="common-before-request-logging-subflow" doc:id="2d666c5c-3087-4708-ba2e-f3c40d7a2782" name="common-before-request-logging-subflow"/>
-		<http:request doc:name="currencyExchangeApiRequest" doc:id="a7e09585-8277-4f7b-af32-0bc594502453" url="https://currency-exchange-api-v1-esulbe.5sc6y6-3.usa-e2.cloudhub.io/exchange" config-ref="currency-exchange-api" target="exchangeRates" targetValue="#[output json --- payload]"/>
+		<http:request doc:name="currencyExchangeApiRequest" doc:id="a7e09585-8277-4f7b-af32-0bc594502453" url="https://currency-exchange-api-v1-esulbe.5sc6y6-3.usa-e2.cloudhub.io/exchange" config-ref="currency-exchange-api" target="exchangeRates" targetValue="#[output json --- payload]">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"x-correlation-id" : vars.loggingVars.correlationId
+}]]]></http:headers>
+		</http:request>
 		<ee:transform doc:name="currencyCodeTransformation" doc:id="6205508c-5047-4421-8dc7-96c97e0fd712" >
 			<ee:message >
 				<ee:set-payload resource="dwl/currencyCodeConversion.dwl" />
