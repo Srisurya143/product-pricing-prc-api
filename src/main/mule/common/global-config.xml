@@ -20,7 +20,7 @@ http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/sc
 <!-- 	<api-gateway:autodiscovery apiId="${api.id}" ignoreBasePath="true" doc:name="api-autodiscovery" doc:id="0679b164-bf2c-476a-b3d7-c8d985f9446b" flowRef="product-pricing-prc-api-main" /> -->
 	<secure-properties:config name="secure-properties-config" doc:name="Secure Properties Config" doc:id="c0732a1a-1460-442d-9b85-6920922adb36" file="secure/properties/secure-${mule.env}.yaml" key="1234567812345678"/>
 	<http:request-config name="product-pricing-sys-api-http-requester-config" doc:name="HTTP Request config" doc:id="9b80be32-4b62-4c79-8ec9-3b769d77cf58" basePath="${productPricingSysApi.baseUrl}">
-		<http:request-connection host="${productPricingSysApi.host}" port="${productPricingSysApi.port}" connectionIdleTimeout="${httpRetry.connectionIdelTimeOut}">
+		<http:request-connection host="${productPricingSysApi.host}" port="${productPricingSysApi.port}" connectionIdleTimeout="${httpRetry.connectionIdelTimeOut}" protocol="HTTPS">
 			<reconnection >
 				<reconnect frequency="${httpRetry.frequency}" count="${httpRetry.attempts}"/>
 			</reconnection>

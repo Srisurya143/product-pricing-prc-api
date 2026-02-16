@@ -25,9 +25,7 @@ attributes.uriParams.'productId']]></ee:set-variable>
 		</ee:transform>
 		<flow-ref doc:name="common-flow-start-logging-subflow" doc:id="2c4704b1-3938-45b5-8fe9-d7174d5b4017" name="common-flow-start-logging-subflow" />
 		<flow-ref doc:name="common-before-request-logging-subflow" doc:id="1b1755bb-e3db-43c2-a50e-761f069402f2" name="common-before-request-logging-subflow"/>
-		<until-successful maxRetries="${httpRetry.attempts}" doc:name="Until Successful" doc:id="999570c5-226e-4d42-83b3-81ad7ac3c48b" millisBetweenRetries="${httpRetry.frequency}">
-			<try doc:name="Try" doc:id="eaaa3d7b-25e6-4c12-b144-7221ddbdf237">
-			<http:request doc:name="productsPricingPrcApiDeleteRequest" doc:id="f9f2b70a-1c34-43cb-8ee3-ef860e39eb2c" config-ref="product-pricing-sys-api-http-requester-config" method="DELETE" path="${productPricingSysApi.productByIdPath}">
+		<http:request doc:name="productsPricingPrcApiDeleteRequest" doc:id="f9f2b70a-1c34-43cb-8ee3-ef860e39eb2c" config-ref="product-pricing-sys-api-http-requester-config" method="DELETE" path="${productPricingSysApi.productByIdPath}">
 			<http:headers><![CDATA[#[output application/java
 ---
 {
@@ -39,17 +37,6 @@ attributes.uriParams.'productId']]></ee:set-variable>
 	productId : attributes.uriParams.'productId'
 }]]]></http:uri-params>
 		</http:request>
-			<error-handler>
-				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="95e7a887-55b8-430b-b3be-f43a94b8fb1e" type="HTTP:CONNECTIVITY, HTTP:SERVICE_UNAVAILABLE, HTTP:TIMEOUT">
-					<set-variable value='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;	"error" : error,&#10;	"errorType" : (error.errorType.namespace default "ERROR") ++ ":" ++ (error.errorType.identifier default "OCCURED")&#10;}]' doc:name="retriableError" doc:id="cb93776b-0f71-4af0-bfb7-34e6062b43e2" variableName="retriableError" />
-				</on-error-propagate>
-				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="b40cecf4-d604-40a6-a55d-c1f26680732b" type="ANY">
-					<set-variable value='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;	"error" : error,&#10;	"errorType" : (error.errorType.namespace default "ERROR") ++ ":" ++ (error.errorType.identifier default "OCCURED")&#10;}]' doc:name="nonRetriableError" doc:id="60c44123-b5bf-4438-b7b0-4999ab06abf6" variableName="retriableError" />
-				</on-error-continue>
-			</error-handler>
-		</try>
-		</until-successful>
-		<validation:is-null doc:id="67c71c87-ed3b-419d-bd8c-91780f15eb31" value="#[vars.retriableError]" doc:name="propagatedErrorIsNull " />
 		<ee:transform doc:name="deleteProductResponse" doc:id="0cc8538c-cb42-428a-bfb3-68d1e464817a" >
 			<ee:message >
 				<ee:set-payload resource="dwl/deleteProductResponse.dwl" />
