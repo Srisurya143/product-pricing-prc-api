@@ -11,5 +11,5 @@ payload.items map (item) ->
     else
         {
             successful: false,
-            errorMessage: item.payload.errors[0].message default item.message default "Unknown Error"
+            message: item.payload.errors[0].message default item.message default "Unknown Error"
         }

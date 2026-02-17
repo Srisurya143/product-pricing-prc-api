@@ -24,7 +24,7 @@ vars.loggingVars update {
 		<scatter-gather doc:name="Scatter-Gather" doc:id="856f8641-3a44-4247-a321-ea0c7e4cce1b" >
 			<route>
 				<try doc:name="Try" doc:id="ae009874-2d1e-456e-85cd-194ceb7fea41" >
-					<http:request doc:name="currencyExchangeApiRequest" doc:id="348a9031-92cf-419b-949d-781901434343" config-ref="currency-exchange-api" url="https://currency-exchange-api-v1-esulbe.5sc6y6-3.usa-e2.cloudhub.io/exchange" >
+					<http:request doc:name="currencyExchangeApiRequest" doc:id="348a9031-92cf-419b-949d-781901434343" config-ref="currency-exchange-api" url="${currencyExchangeApi.url}" >
 						<http:headers ><![CDATA[#[output application/java
 ---
 {
@@ -49,7 +49,7 @@ vars.loggingVars update {
 			</route>
 			<route>
 				<try doc:name="Try" doc:id="a04e26a1-52cd-4595-a923-57e36181603b" >
-					<http:request doc:name="productPricingSysApiRequest" doc:id="683ef63a-cf44-4816-8704-ce8253bfb8f2" config-ref="product-pricing-sys-api-http-requester-config" path="${productPricingSysApi.healthCheck}">
+					<http:request doc:name="productPricingSysApiRequest" doc:id="683ef63a-cf44-4816-8704-ce8253bfb8f2" config-ref="product-pricing-sys-api-http-requester-config" path="${productPricingSysApi.healthCheck}" sendCorrelationId="ALWAYS" correlationId="#[vars.loggingVars.correlationId]">
 			<http:headers><![CDATA[#[output application/java
 ---
 {
