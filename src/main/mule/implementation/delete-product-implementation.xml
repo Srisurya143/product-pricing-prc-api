@@ -25,9 +25,7 @@ attributes.uriParams.'productId']]></ee:set-variable>
 		</ee:transform>
 		<flow-ref doc:name="common-flow-start-logging-subflow" doc:id="2c4704b1-3938-45b5-8fe9-d7174d5b4017" name="common-flow-start-logging-subflow" />
 		<flow-ref doc:name="common-before-request-logging-subflow" doc:id="1b1755bb-e3db-43c2-a50e-761f069402f2" name="common-before-request-logging-subflow"/>
-		<until-successful maxRetries="${httpRetry.attempts}" doc:name="Until Successful" doc:id="8871978d-273d-4e7e-a8e3-cf3fbbd40473" millisBetweenRetries="${httpRetry.frequency}">
-			<try doc:name="Try" doc:id="ba4bf666-0bfe-47a0-99b3-a84a4a50c0ce">
-			<http:request doc:name="productsPricingPrcApiDeleteRequest" doc:id="f9f2b70a-1c34-43cb-8ee3-ef860e39eb2c" config-ref="product-pricing-sys-api-http-requester-config" method="DELETE" path="${productPricingSysApi.productByIdPath}">
+		<http:request doc:name="productsPricingPrcApiDeleteRequest" doc:id="f9f2b70a-1c34-43cb-8ee3-ef860e39eb2c" config-ref="product-pricing-sys-api-http-requester-config" method="DELETE" path="${productPricingSysApi.productByIdPath}">
 			<http:headers><![CDATA[#[output application/java
 ---
 {
@@ -39,10 +37,6 @@ attributes.uriParams.'productId']]></ee:set-variable>
 	productId : attributes.uriParams.'productId'
 }]]]></http:uri-params>
 		</http:request>
-				<error-handler ref="reconnection-strategy-subflow" />
-		</try>
-		</until-successful>
-		<validation:is-null doc:name="propagatedErrorPayload" doc:id="94607db9-29d1-4a7e-a718-61e36919d785" value="#[vars.propagateErrorPayload]" />
 		<ee:transform doc:name="deleteProductResponse" doc:id="0cc8538c-cb42-428a-bfb3-68d1e464817a" >
 			<ee:message >
 				<ee:set-payload resource="dwl/deleteProductResponse.dwl" />

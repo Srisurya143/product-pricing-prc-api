@@ -25,9 +25,7 @@ attributes.uriParams.'productId']]></ee:set-variable>
 		</ee:transform>
 		<flow-ref doc:name="common-flow-start-logging-subflow" doc:id="468c561c-a8ae-4a27-bbac-fcf644143bc7" name="common-flow-start-logging-subflow" />
 		<flow-ref doc:name="common-before-request-logging-subflow" doc:id="f4356465-a792-4c56-bea4-5858c6392292" name="common-before-request-logging-subflow" />
-		<until-successful maxRetries="${httpRetry.attempts}" doc:name="Until Successful" doc:id="f90060ba-57fa-4080-8e6b-7e57e555bb9a" millisBetweenRetries="${httpRetry.frequency}">
-			<try doc:name="Try" doc:id="f1b28386-f741-4499-9a98-6bdd02355f0e">
-			<http:request doc:name="productsPricingPrcApiUpdateRequest" doc:id="0a499708-663b-477e-9a27-8e12809c9fc0" config-ref="product-pricing-sys-api-http-requester-config" method="PATCH" path="${productPricingSysApi.productByIdPath}" sendCorrelationId="ALWAYS" responseTimeout="60000">
+		<http:request doc:name="productsPricingPrcApiUpdateRequest" doc:id="0a499708-663b-477e-9a27-8e12809c9fc0" config-ref="product-pricing-sys-api-http-requester-config" method="PATCH" path="${productPricingSysApi.productByIdPath}" sendCorrelationId="ALWAYS" responseTimeout="60000">
 			<reconnect />
 			<http:headers><![CDATA[#[output application/java
 ---
@@ -40,10 +38,6 @@ attributes.uriParams.'productId']]></ee:set-variable>
 	productId : attributes.uriParams.'productId'
 }]]]></http:uri-params>
 		</http:request>
-				<error-handler ref="reconnection-strategy-subflow" />
-		</try>
-		</until-successful>
-		<validation:is-null doc:name="propagatedErrorPayload" doc:id="4b35d965-71a1-41f7-b2bb-c8c1d5578fa3" value="#[vars.propagateErrorPayload]" />
 		<ee:transform doc:name="updateProductResponse" doc:id="28b71a28-3ba4-4616-a873-4321d2da9724" >
 			<ee:message >
 				<ee:set-payload resource="dwl/updateProductResponse.dwl" />
