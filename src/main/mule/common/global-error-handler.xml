@@ -24,7 +24,11 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 					<ee:set-payload resource="dwl/anyErrorType.dwl" />
 				
 </ee:message>
-			</ee:transform>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[vars.httpStatus default 500]]></ee:set-variable>
+				</ee:variables>
+			
+</ee:transform>
 			<flow-ref doc:name="common-error-logging-subflow" doc:id="f8495b92-ae2c-4dc7-8b11-458abb39e6da" name="common-error-logging-subflow"/>
 		</on-error-propagate>
 </error-handler>
