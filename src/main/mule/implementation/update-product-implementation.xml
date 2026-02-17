@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
-	xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
-http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
 	<sub-flow name="update-product-implementation-subflow" doc:id="7957e9d0-df71-47f3-890e-ecdc4d1f820b" >
 		<ee:transform doc:name="updateFlowname" doc:id="fc9dd9ff-d2e6-4ff9-9657-94a62f0c2452" >
 			<ee:message />
@@ -24,19 +25,25 @@ attributes.uriParams.'productId']]></ee:set-variable>
 		</ee:transform>
 		<flow-ref doc:name="common-flow-start-logging-subflow" doc:id="468c561c-a8ae-4a27-bbac-fcf644143bc7" name="common-flow-start-logging-subflow" />
 		<flow-ref doc:name="common-before-request-logging-subflow" doc:id="f4356465-a792-4c56-bea4-5858c6392292" name="common-before-request-logging-subflow" />
-		<http:request doc:name="productsPricingPrcApiUpdateRequest" doc:id="0a499708-663b-477e-9a27-8e12809c9fc0" config-ref="product-pricing-sys-api-http-requester-config" method="PATCH" path="${productPricingSysApi.productByIdPath}" sendCorrelationId="ALWAYS" responseTimeout="60000">
+		<until-successful maxRetries="${httpRetry.attempts}" doc:name="Until Successful" doc:id="f90060ba-57fa-4080-8e6b-7e57e555bb9a" millisBetweenRetries="${httpRetry.frequency}">
+			<try doc:name="Try" doc:id="f1b28386-f741-4499-9a98-6bdd02355f0e">
+			<http:request doc:name="productsPricingPrcApiUpdateRequest" doc:id="0a499708-663b-477e-9a27-8e12809c9fc0" config-ref="product-pricing-sys-api-http-requester-config" method="PATCH" path="${productPricingSysApi.productByIdPath}" sendCorrelationId="ALWAYS" responseTimeout="60000">
 			<reconnect />
-			<http:headers ><![CDATA[#[output application/java
+			<http:headers><![CDATA[#[output application/java
 ---
 {
 	"x-correlation-id" : vars.loggingVars.correlationId
 }]]]></http:headers>
-			<http:uri-params ><![CDATA[#[output application/java
+			<http:uri-params><![CDATA[#[output application/java
 ---
 {
 	productId : attributes.uriParams.'productId'
 }]]]></http:uri-params>
 		</http:request>
+				<error-handler ref="reconnection-strategy-subflow" />
+		</try>
+		</until-successful>
+		<validation:is-null doc:name="propagatedErrorPayload" doc:id="4b35d965-71a1-41f7-b2bb-c8c1d5578fa3" value="#[vars.propagateErrorPayload]" />
 		<ee:transform doc:name="updateProductResponse" doc:id="28b71a28-3ba4-4616-a873-4321d2da9724" >
 			<ee:message >
 				<ee:set-payload resource="dwl/updateProductResponse.dwl" />
