@@ -10,17 +10,17 @@ http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mu
 		<ee:transform doc:name="updateFlowname" doc:id="fc9dd9ff-d2e6-4ff9-9657-94a62f0c2452" >
 			<ee:message />
 			<ee:variables >
-				<ee:set-variable variableName="flowName" ><![CDATA[%dw 2.0
+				<ee:set-variable variableName="productId" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.uriParams.'productId']]></ee:set-variable>
+				<ee:set-variable variableName="loggingVars" ><![CDATA[%dw 2.0
 output application/json
 ---
 vars.loggingVars update {
 	case .flowName -> "update-product-implementation-subflow"
 }
 ]]></ee:set-variable>
-				<ee:set-variable variableName="productId" ><![CDATA[%dw 2.0
-output application/json
----
-attributes.uriParams.'productId']]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
 		<flow-ref doc:name="common-flow-start-logging-subflow" doc:id="468c561c-a8ae-4a27-bbac-fcf644143bc7" name="common-flow-start-logging-subflow" />

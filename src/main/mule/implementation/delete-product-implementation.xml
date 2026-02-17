@@ -10,17 +10,17 @@ http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mu
 		<ee:transform doc:name="updateFlowname" doc:id="fb6080a0-1ad6-4e23-92d0-ce42c55ca2c2" >
 			<ee:message />
 			<ee:variables >
-				<ee:set-variable variableName="flowName" ><![CDATA[%dw 2.0
+				<ee:set-variable variableName="productId" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.uriParams.'productId']]></ee:set-variable>
+				<ee:set-variable variableName="loggingVars" ><![CDATA[%dw 2.0
 output application/json
 ---
 vars.loggingVars update {
 	case .flowName -> "delete-product-implementation-subflow"
 }
 ]]></ee:set-variable>
-				<ee:set-variable variableName="productId" ><![CDATA[%dw 2.0
-output application/json
----
-attributes.uriParams.'productId']]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
 		<flow-ref doc:name="common-flow-start-logging-subflow" doc:id="2c4704b1-3938-45b5-8fe9-d7174d5b4017" name="common-flow-start-logging-subflow" />
