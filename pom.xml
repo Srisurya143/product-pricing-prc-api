@@ -70,7 +70,7 @@
 		<dependency>
 			<groupId>78234722-409d-4d71-aa51-1f55808cb405</groupId>
 			<artifactId>product-pricing-prc-api</artifactId>
-			<version>1.0.1</version>
+			<version>1.0.2</version>
 			<classifier>raml</classifier>
 			<type>zip</type>
 		</dependency>
