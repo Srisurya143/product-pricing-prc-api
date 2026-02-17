@@ -16,7 +16,7 @@ output application/json
           {
             "code": "OK",
             "message": "currency exchange api is reachable",
-            "name": "currency exchange api"
+            "name": "currency-exchange-api"
           }
         ]
       },

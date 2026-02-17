@@ -36,36 +36,6 @@ vars.loggingVars update {
 							<ee:set-payload resource="dwl/healthCheckSuccessResponse.dwl" />
 						</ee:message>
 					</ee:transform>
-					<!-- [STUDIO:"responseMessage"]<ee:transform doc:name="responseMessage" doc:id="1f04b42b-ed44-4979-ad30-2b5cebdc550c" >
-						<ee:message >
-							<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
-&#45;&#45;-
-{
-    "message": "OK",
-    "reason": "health check",
-    "response": {
-        "application": p('api.Name'),
-        "buildVersion": p('api.Version'),
-        "buildTimeStamp": now(),
-        "code": if (payload.code contains "ERROR") "ERROR" else "OK",
-        "failed": if (payload.code contains "ERROR") true else false,
-        "host": vars.host default attributes.headers.host,
-        "tier": p('mule.env'),
-        "systems": [
-                     {
-                       code: "OK",
-                       message: "currency exchange api is reachable",
-                       name: "currency exchange api"
-                     }
-
-                   &#93;
-    },
-    "status": 200
-}
-&#93;&#93;></ee:set-payload>
-						</ee:message>
-					</ee:transform> [STUDIO] -->
 					<error-handler >
 						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="bfb83833-119c-4173-b07c-7d6431ec2e29" >
 							<ee:transform doc:name="errorResponseMessage" doc:id="4411e95d-a188-4f03-a667-035443136698" >
@@ -86,36 +56,6 @@ output application/json
 	"x-correlation-id" : vars.loggingVars.correlationId
 }]]]></http:headers>
 		</http:request>
-					<!-- [STUDIO:"Transform Message"]<ee:transform doc:name="Transform Message" doc:id="d6b7e733-c7f8-4cbd-af93-c0b599b48096" >
-						<ee:message >
-							<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
-&#45;&#45;-
-{
-    "message": "OK",
-    "reason": "health check",
-    "response": {
-        "application": p('api.Name'),
-        "buildVersion": p('api.Version'),
-        "buildTimeStamp": now(),
-        "code": if (payload.code contains "ERROR") "ERROR" else "OK",
-        "failed": if (payload.code contains "ERROR") true else false,
-        "host": vars.host default attributes.headers.host,
-        "tier": p('mule.env'),
-        "systems": [
-{
-    code: "OK",
-    message: "product pricing sys api is reachable",
-    name: "product pricing sys api"
-}
-
-                   &#93;
-    },
-    "status": 200
-}
-&#93;&#93;></ee:set-payload>
-						</ee:message>
-					</ee:transform> [STUDIO] -->
 					<error-handler >
 						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="866028c9-73d7-4b2a-aa43-1b59c7757436" >
 							<ee:transform doc:name="errorResponseMessage" doc:id="afd54255-4c60-4734-a82d-4611c3dbfb04" >
