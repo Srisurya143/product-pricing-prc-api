@@ -22,10 +22,12 @@ vars.loggingVars update {
 		<flow-ref doc:name="common-flow-start-logging-subflow" doc:id="15da25e4-cd4c-48e3-993b-d8e9f35f4b0f" name="common-flow-start-logging-subflow" />
 		<flow-ref doc:name="common-before-request-logging-subflow" doc:id="bba4fbe7-d5e3-4152-b12b-255dacfbeb0b" name="common-before-request-logging-subflow" />
 		<http:request doc:name="productsPricingPrcApiPostRequest" doc:id="61b8d419-34b9-40d2-89dc-a7d93518e6be" config-ref="product-pricing-sys-api-http-requester-config" method="POST" path="${productPricingSysApi.productsPath}" sendCorrelationId="ALWAYS" correlationId="#[vars.loggingVars.correlationId]">
-			<http:headers><![CDATA[#[output application/java
+			<http:headers><![CDATA[#[output application/json
 ---
 {
-	"x-correlation-id" : vars.loggingVars.correlationId
+	"x-correlation-id" : vars.loggingVars.correlationId,
+	"client_id": p('secure::productPricingSysApi.client_id'),
+    "client_secret": p('secure::productPricingSysApi.client_secret')
 }]]]></http:headers>
 		</http:request>
 		<ee:transform doc:name="createProductResponse" doc:id="d4cccfee-b34e-45dc-b700-3e10d7f2b980" >
